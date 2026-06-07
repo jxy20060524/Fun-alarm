@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="true" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.funalarm.Launcher" />
+    <module name="fun-alarm" />
+    <option name="VM_PARAMETERS" value="--module-path &quot;$PROJECT_DIR$/target/javafx-modules&quot; --add-modules javafx.controls,javafx.fxml,javafx.media" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
