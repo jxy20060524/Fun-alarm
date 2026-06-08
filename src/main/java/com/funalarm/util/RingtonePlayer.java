@@ -10,9 +10,16 @@ public final class RingtonePlayer {
     }
 
     public static void start() {
+        start(RingtoneCatalog.defaultRingtone());
+    }
+
+    public static void start(String ringtoneFileName) {
         stop();
+        String file = (ringtoneFileName == null || ringtoneFileName.isBlank())
+                ? RingtoneCatalog.defaultRingtone()
+                : ringtoneFileName.trim();
         try {
-            var url = RingtonePlayer.class.getResource("/sounds/default.wav");
+            var url = RingtonePlayer.class.getResource("/sounds/" + file);
             if (url != null) {
                 clip = new AudioClip(url.toExternalForm());
                 clip.setCycleCount(AudioClip.INDEFINITE);
@@ -45,5 +52,9 @@ public final class RingtonePlayer {
             beepThread.interrupt();
             beepThread = null;
         }
+    }
+
+    public static boolean isPlaying() {
+        return clip != null || beepThread != null;
     }
 }

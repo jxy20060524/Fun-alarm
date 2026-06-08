@@ -46,29 +46,15 @@ db.password=你的密码
 
 ### 4. 运行
 
-**推荐：IntelliJ 运行配置**
-
-1. 在 IntelliJ 右上角选择 **FunAlarmApp** 或 **FunAlarm (Maven)** 运行配置
-2. 首次运行前，右键 `pom.xml` → **Maven** → **Reload Project**，等待依赖下载完成
-3. 点击运行
-
-若直接运行 `FunAlarmApp` 出现「缺少 JavaFX 运行时组件」，请改用 **FunAlarmApp**（Launcher 入口）或 **FunAlarm (Maven)** 配置。
-
-**方式 A：Maven（命令行）**
+**方式 A：Maven + JavaFX 插件**
 
 ```bash
 mvn clean javafx:run
 ```
 
-**方式 B：IDE 手动 VM 参数**
+**方式 B：IDE**
 
-主类设为 `com.funalarm.Launcher`，添加 VM options：
-
-```
---module-path "target/javafx-modules" --add-modules javafx.controls,javafx.fxml,javafx.media
-```
-
-运行前先执行 `mvn process-resources` 生成 `target/javafx-modules` 目录。
+运行主类 `com.funalarm.FunAlarmApp`。
 
 ### 5. 演示流程
 

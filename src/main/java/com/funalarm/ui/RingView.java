@@ -9,12 +9,20 @@ import com.funalarm.util.RingtonePlayer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 
 public class RingView {
+    private static final double OPTION_BOX_SIZE = 200;
+
     private final AppContext context;
     private final Alarm alarm;
     private WakeSession session;
@@ -25,6 +33,7 @@ public class RingView {
     private Label questionLabel;
     private Label messageLabel;
     private ToggleGroup optionGroup;
+    private GridPane optionsGrid;
 
     public RingView(AppContext context, Alarm alarm, WakeSession session, Question question) {
         this.context = context;
@@ -34,31 +43,34 @@ public class RingView {
     }
 
     public Scene buildScene() {
-        RingtonePlayer.start();
+        RingtonePlayer.start(alarm.getRingtone());
 
         Label title = new Label("闹钟响了！答对题目才能关闭");
         title.setFont(Font.font("Microsoft YaHei", FontWeight.BOLD, 26));
         title.setStyle("-fx-text-fill: #e74c3c;");
+        title.setAlignment(Pos.CENTER);
+        title.setMaxWidth(Double.MAX_VALUE);
 
         Label timeLabel = new Label("闹钟时间：" + statsService.formatTime(alarm.getAlarmTime()));
         timeLabel.setFont(Font.font("Microsoft YaHei", 16));
+        timeLabel.setAlignment(Pos.CENTER);
+        timeLabel.setMaxWidth(Double.MAX_VALUE);
 
         questionLabel = new Label();
         questionLabel.setWrapText(true);
         questionLabel.setFont(Font.font("Microsoft YaHei", FontWeight.BOLD, 20));
+        questionLabel.setAlignment(Pos.CENTER);
+        questionLabel.setTextAlignment(TextAlignment.CENTER);
+        questionLabel.setMaxWidth(720);
         updateQuestionDisplay();
 
-        optionGroup = new ToggleGroup();
-        VBox optionsBox = new VBox(12);
-        optionsBox.getChildren().addAll(
-                createOption("A", currentQuestion.getOptionA()),
-                createOption("B", currentQuestion.getOptionB()),
-                createOption("C", currentQuestion.getOptionC()),
-                createOption("D", currentQuestion.getOptionD())
-        );
+        optionsGrid = buildOptionsGrid();
 
         messageLabel = new Label();
         messageLabel.setWrapText(true);
+        messageLabel.setAlignment(Pos.CENTER);
+        messageLabel.setTextAlignment(TextAlignment.CENTER);
+        messageLabel.setMaxWidth(720);
         messageLabel.setStyle("-fx-text-fill: #d35400; -fx-font-size: 14px;");
 
         Button submitBtn = new Button("提交答案");
@@ -66,21 +78,72 @@ public class RingView {
         submitBtn.setFont(Font.font("Microsoft YaHei", FontWeight.BOLD, 16));
         submitBtn.setOnAction(e -> submitAnswer());
 
-        VBox root = new VBox(20, title, timeLabel, questionLabel, optionsBox, messageLabel, submitBtn);
+        VBox root = new VBox(24, title, timeLabel, questionLabel, optionsGrid, messageLabel, submitBtn);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(40));
         root.setStyle("-fx-background-color: #fff5f5;");
 
-        return new Scene(root, 800, 600);
+        return new Scene(root, 900, 700);
     }
 
-    private RadioButton createOption(String key, String text) {
-        RadioButton btn = new RadioButton(key + ". " + text);
+    private GridPane buildOptionsGrid() {
+        optionGroup = new ToggleGroup();
+        GridPane grid = new GridPane();
+        grid.setHgap(20);
+        grid.setVgap(20);
+        grid.setAlignment(Pos.CENTER);
+
+        grid.add(createOption("A", currentQuestion.getOptionA()), 0, 0);
+        grid.add(createOption("B", currentQuestion.getOptionB()), 1, 0);
+        grid.add(createOption("C", currentQuestion.getOptionC()), 0, 1);
+        grid.add(createOption("D", currentQuestion.getOptionD()), 1, 1);
+        return grid;
+    }
+
+    private ToggleButton createOption(String key, String text) {
+        ToggleButton btn = new ToggleButton(key + ". " + text);
         btn.setToggleGroup(optionGroup);
         btn.setUserData(key.charAt(0));
-        btn.setFont(Font.font("Microsoft YaHei", 16));
+        btn.setFont(Font.font("Microsoft YaHei", FontWeight.BOLD, 16));
         btn.setWrapText(true);
-        btn.setMaxWidth(600);
+        btn.setTextAlignment(TextAlignment.CENTER);
+        btn.setAlignment(Pos.CENTER);
+        btn.setContentDisplay(javafx.scene.control.ContentDisplay.CENTER);
+        btn.setPrefSize(OPTION_BOX_SIZE, OPTION_BOX_SIZE);
+        btn.setMinSize(OPTION_BOX_SIZE, OPTION_BOX_SIZE);
+        btn.setMaxSize(OPTION_BOX_SIZE, OPTION_BOX_SIZE);
+        btn.setStyle("""
+                -fx-background-color: white;
+                -fx-text-fill: #2c3e50;
+                -fx-border-color: #bdc3c7;
+                -fx-border-width: 2;
+                -fx-border-radius: 12;
+                -fx-background-radius: 12;
+                -fx-padding: 16;
+                """);
+        btn.selectedProperty().addListener((obs, oldVal, selected) -> {
+            if (selected) {
+                btn.setStyle("""
+                        -fx-background-color: #3498db;
+                        -fx-text-fill: white;
+                        -fx-border-color: #2980b9;
+                        -fx-border-width: 2;
+                        -fx-border-radius: 12;
+                        -fx-background-radius: 12;
+                        -fx-padding: 16;
+                        """);
+            } else {
+                btn.setStyle("""
+                        -fx-background-color: white;
+                        -fx-text-fill: #2c3e50;
+                        -fx-border-color: #bdc3c7;
+                        -fx-border-width: 2;
+                        -fx-border-radius: 12;
+                        -fx-background-radius: 12;
+                        -fx-padding: 16;
+                        """);
+            }
+        });
         return btn;
     }
 
@@ -102,7 +165,6 @@ public class RingView {
             session = result.session();
 
             if (result.correct()) {
-                RingtonePlayer.stop();
                 int streak = statsService.getStreakDays(context.getCurrentUser().getUserId());
                 context.showMotivation(streak);
                 return;
@@ -110,7 +172,6 @@ public class RingView {
 
             if (result.switchedQuestion()) {
                 currentQuestion = result.nextQuestion();
-                optionGroup = new ToggleGroup();
                 messageLabel.setText(result.message());
                 rebuildOptions();
                 updateQuestionDisplay();
@@ -129,16 +190,10 @@ public class RingView {
             return;
         }
         VBox root = (VBox) scene.getRoot();
-        int optionsIndex = root.getChildren().indexOf(questionLabel) + 1;
-        if (optionsIndex >= 0 && optionsIndex < root.getChildren().size()) {
-            VBox optionsBox = new VBox(12);
-            optionsBox.getChildren().addAll(
-                    createOption("A", currentQuestion.getOptionA()),
-                    createOption("B", currentQuestion.getOptionB()),
-                    createOption("C", currentQuestion.getOptionC()),
-                    createOption("D", currentQuestion.getOptionD())
-            );
-            root.getChildren().set(optionsIndex, optionsBox);
+        int optionsIndex = root.getChildren().indexOf(optionsGrid);
+        if (optionsIndex >= 0) {
+            optionsGrid = buildOptionsGrid();
+            root.getChildren().set(optionsIndex, optionsGrid);
         }
     }
 }

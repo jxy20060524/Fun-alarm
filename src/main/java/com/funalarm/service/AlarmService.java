@@ -2,7 +2,7 @@ package com.funalarm.service;
 
 import com.funalarm.dao.AlarmDAO;
 import com.funalarm.model.Alarm;
-import com.funalarm.util.AppConstants;
+import com.funalarm.util.RingtoneCatalog;
 
 import java.sql.SQLException;
 import java.time.LocalTime;
@@ -37,11 +37,6 @@ public class AlarmService {
         if (time == null) {
             throw new IllegalArgumentException("请选择闹钟时间");
         }
-        LocalTime start = AppConstants.ALARM_TIME_RANGE.start();
-        LocalTime end = AppConstants.ALARM_TIME_RANGE.end();
-        if (time.isBefore(start) || time.isAfter(end)) {
-            throw new IllegalArgumentException("闹钟时间必须在 05:00–09:00 之间");
-        }
     }
 
     private void validateAlarm(Alarm alarm) {
@@ -53,7 +48,7 @@ public class AlarmService {
             throw new IllegalArgumentException("请至少选择一天重复");
         }
         if (alarm.getRingtone() == null || alarm.getRingtone().isBlank()) {
-            alarm.setRingtone("default.wav");
+            alarm.setRingtone(RingtoneCatalog.defaultRingtone());
         }
     }
 }

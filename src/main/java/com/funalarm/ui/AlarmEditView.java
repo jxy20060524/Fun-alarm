@@ -3,6 +3,7 @@ package com.funalarm.ui;
 import com.funalarm.model.Alarm;
 import com.funalarm.service.AlarmService;
 import com.funalarm.util.AppConstants;
+import com.funalarm.util.RingtoneCatalog;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -31,16 +32,13 @@ public class AlarmEditView {
         Label title = new Label(isNew ? "新建闹钟" : "编辑闹钟");
         title.setFont(Font.font("Microsoft YaHei", FontWeight.BOLD, 22));
 
-        Spinner<Integer> hourSpinner = new Spinner<>(5, 9, alarm.getAlarmTime().getHour());
+        Spinner<Integer> hourSpinner = new Spinner<>(0, 23, alarm.getAlarmTime().getHour());
         hourSpinner.setEditable(true);
         hourSpinner.setPrefWidth(80);
 
         Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, alarm.getAlarmTime().getMinute(), 1);
         minuteSpinner.setEditable(true);
         minuteSpinner.setPrefWidth(80);
-
-        Label timeHint = new Label("时间范围：05:00 – 09:00");
-        timeHint.setStyle("-fx-text-fill: #666;");
 
         CheckBox[] dayChecks = new CheckBox[7];
         GridPane dayGrid = new GridPane();
@@ -54,8 +52,13 @@ public class AlarmEditView {
         }
 
         ComboBox<String> ringtoneBox = new ComboBox<>();
-        ringtoneBox.getItems().addAll("default.wav");
-        ringtoneBox.setValue(alarm.getRingtone() != null ? alarm.getRingtone() : "default.wav");
+        ringtoneBox.getItems().addAll(RingtoneCatalog.listAvailable());
+        String selectedRingtone = alarm.getRingtone();
+        if (selectedRingtone != null && ringtoneBox.getItems().contains(selectedRingtone)) {
+            ringtoneBox.setValue(selectedRingtone);
+        } else {
+            ringtoneBox.setValue(RingtoneCatalog.defaultRingtone());
+        }
 
         TextField labelField = new TextField(alarm.getLabel() != null ? alarm.getLabel() : "");
         labelField.setPromptText("备注，如「起床」");
@@ -96,7 +99,7 @@ public class AlarmEditView {
         timeBox.setAlignment(Pos.CENTER_LEFT);
         HBox actions = new HBox(12, saveBtn, cancelBtn);
 
-        VBox root = new VBox(14, title, new Label("闹钟时间"), timeBox, timeHint,
+        VBox root = new VBox(14, title, new Label("闹钟时间"), timeBox,
                 new Label("重复"), dayGrid,
                 new Label("铃声"), ringtoneBox,
                 new Label("备注"), labelField,

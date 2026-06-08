@@ -5,6 +5,7 @@ import com.funalarm.model.User;
 import com.funalarm.service.AlarmService;
 import com.funalarm.service.StatsService;
 import com.funalarm.service.UserService;
+import com.funalarm.util.RingtoneCatalog;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -119,7 +120,7 @@ public class AlarmListView {
         alarm.setUserId(context.getCurrentUser().getUserId());
         alarm.setAlarmTime(LocalTime.of(7, 0));
         alarm.setRepeatDays("1111100");
-        alarm.setRingtone("default.wav");
+        alarm.setRingtone(RingtoneCatalog.defaultRingtone());
         alarm.setActive(true);
         alarm.setLabel("起床");
         context.showAlarmEdit(alarm);

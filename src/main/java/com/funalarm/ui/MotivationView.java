@@ -1,6 +1,7 @@
 package com.funalarm.ui;
 
 import com.funalarm.util.AppConstants;
+import com.funalarm.util.RingtonePlayer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -34,11 +35,25 @@ public class MotivationView {
         streakLabel.setFont(Font.font("Microsoft YaHei", FontWeight.BOLD, 22));
         streakLabel.setStyle("-fx-text-fill: #27ae60;");
 
+        Button closeAlarmBtn = new Button("关闭闹钟");
+        closeAlarmBtn.setPrefWidth(180);
+        closeAlarmBtn.setFont(Font.font("Microsoft YaHei", FontWeight.BOLD, 16));
+        closeAlarmBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
+
         Button backBtn = new Button("返回首页");
         backBtn.setPrefWidth(160);
+        backBtn.setDisable(true);
+
+        closeAlarmBtn.setOnAction(e -> {
+            RingtonePlayer.stop();
+            closeAlarmBtn.setDisable(true);
+            closeAlarmBtn.setText("闹钟已关闭");
+            backBtn.setDisable(false);
+        });
+
         backBtn.setOnAction(e -> context.showAlarmList());
 
-        VBox root = new VBox(24, title, streakLabel, backBtn);
+        VBox root = new VBox(24, title, streakLabel, closeAlarmBtn, backBtn);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(40));
         root.setStyle("-fx-background-color: #eafaf1;");
