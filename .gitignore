@@ -1,8 +1,15 @@
 ### IntelliJ IDEA ###
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+.idea/
+*.iml
 .kotlin
+
+### Maven ###
+target/
+
+### 本地配置（含密码，勿提交）###
+config.properties
+src/main/resources/config.properties
 
 ### Eclipse ###
 .apt_generated
@@ -26,5 +33,14 @@ bin/
 ### VS Code ###
 .vscode/
 
+### Cursor ###
+.cursor/
+
 ### Mac OS ###
 .DS_Store
+
+### Windows ###
+Thumbs.db
+
+### Logs ###
+*.log
