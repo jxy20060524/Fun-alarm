@@ -1,46 +1,43 @@
-### IntelliJ IDEA ###
-out/
-.idea/
-*.iml
-.kotlin
-
 ### Maven ###
+backend/target/
 target/
 
-### 本地配置（含密码，勿提交）###
-config.properties
-src/main/resources/config.properties
+### Node ###
+frontend/node_modules/
+frontend/dist/
 
-### Eclipse ###
+### IDE ###
+.idea/
+*.iml
+.vscode/
+.cursor/
+out/
+
+### 本地私密配置（含数据库密码，切勿提交）###
+config.properties
+backend/src/main/resources/application-local.yml
+src/main/resources/config.properties
+.env
+.env.*
+!.env.example
+frontend/.env.local
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Logs ###
+*.log
+
+### Eclipse / NetBeans ###
 .apt_generated
 .classpath
 .factorypath
 .project
 .settings
-.springBeans
-.sts4-cache
 bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
-
-### Cursor ###
-.cursor/
-
-### Mac OS ###
-.DS_Store
-
-### Windows ###
-Thumbs.db
-
-### Logs ###
-*.log
+### 旧桌面版残留 ###
+src/main/java/
+config.properties.example
+src/main/resources/config.properties.example
