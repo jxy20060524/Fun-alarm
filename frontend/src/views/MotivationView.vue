@@ -12,7 +12,7 @@ const message = ref(route.query.msg || '今天又是美好的一天！')
 const streak = ref(Number(route.query.streak || 0))
 
 function closeAlarm() {
-  ringStore.stopRingtone()
+  ringStore.stopAlarmSound()
   closed.value = true
 }
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { quizApi } from '../api'
 import { useRingStore } from '../stores'
@@ -7,6 +7,16 @@ import { useRingStore } from '../stores'
 const router = useRouter()
 const ringStore = useRingStore()
 const selected = ref('')
+
+watch(() => ringStore.visible, (show) => {
+  if (show) ringStore.retryRingtone()
+})
+
+function enableSound() {
+  ringStore.unlockFromUserGesture({ audibilityTest: true }).then(() => {
+    ringStore.retryRingtone()
+  })
+}
 
 const options = () => [
   { key: 'A', text: ringStore.question?.optionA },
@@ -27,7 +37,7 @@ async function submit() {
       userAnswer: selected.value
     })
     if (result.correct) {
-      ringStore.closeRingtoneOnly()
+      ringStore.close()
       router.push({
         path: '/motivation',
         query: {
@@ -35,7 +45,6 @@ async function submit() {
           streak: result.streakDays
         }
       })
-      ringStore.close()
       return
     }
     if (result.switchedQuestion) {
@@ -58,9 +67,12 @@ function formatTime(t) {
 </script>
 
 <template>
-  <div v-if="ringStore.visible" class="ring-overlay">
-    <div class="ring-box">
+  <div v-if="ringStore.visible" class="ring-overlay" @click="enableSound">
+    <div class="ring-box" @click.stop>
       <h2 class="ring-title">闹钟响了！答对题目才能关闭</h2>
+      <button v-if="ringStore.audioBlocked" type="button" class="audio-hint" @click="enableSound">
+        点击开启铃声
+      </button>
       <p>闹钟时间：{{ formatTime(ringStore.alarm?.alarmTime) }}</p>
       <h3 class="question">{{ ringStore.question?.content }}</h3>
       <div class="options-grid">
@@ -106,6 +118,11 @@ function formatTime(t) {
 }
 .option-btn.selected {
   background: #3498db; color: #fff; border-color: #2980b9;
+}
+.audio-hint {
+  color: #c0392b; font-weight: 700; margin: 12px 0;
+  padding: 12px; background: #fdecea; border-radius: 8px;
+  cursor: pointer;
 }
 .msg { color: #d35400; margin: 12px 0; }
 .submit-btn { width: 200px; height: 48px; font-size: 16px; font-weight: 700; }

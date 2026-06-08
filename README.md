@@ -29,18 +29,18 @@
 2. 在数据库中执行：
 
 ```bash
-mysql -h 你的外网地址 -P 3306 -u root -p --default-character-set=utf8mb4 < sql/init.sql
+mysql -h bj-cynosdbmysql-grp-7t95af7a.sql.tencentcdb.com -P 20873 -u root -p --default-character-set=utf8mb4 < sql/init.sql
 ```
 
 3. 配置后端连接（**密码不要写进会提交的文件**）：
 
 **推荐：本地私密文件**
 
-复制 `backend/src/main/resources/application.example.yml` 为 `application-local.yml`，填入密码后启动：
+复制 `backend/src/main/resources/application.example.yml` 为 `application-local.yml`，填入密码。启动时会**自动加载**该文件，无需再指定 `local` profile。
 
 ```bash
 cd backend
-mvn spring-boot:run -Dspring-boot.run.profiles=local,default
+mvn spring-boot:run
 ```
 
 **或使用环境变量：**

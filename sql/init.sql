@@ -25,7 +25,7 @@ CREATE TABLE alarms (
     user_id     INT NOT NULL,
     alarm_time  TIME NOT NULL,
     repeat_days VARCHAR(7) NOT NULL,
-    ringtone    VARCHAR(100) NOT NULL DEFAULT 'default.wav',
+    ringtone    VARCHAR(100) NOT NULL DEFAULT 'happy.mp3',
     is_active   TINYINT(1) NOT NULL DEFAULT 1,
     label       VARCHAR(50),
     created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

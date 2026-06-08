@@ -36,10 +36,11 @@ export function useAlarmScheduler() {
       const t = String(alarm.alarmTime).substring(0, 5)
       if (t !== now) continue
       if (alarmStore.triggeredToday.has(alarm.alarmId)) continue
+      ringStore.playRingtone(alarm.ringtone)
       try {
         const data = await quizApi.startSession(alarm.alarmId)
         alarmStore.markTriggered(alarm.alarmId)
-        ringStore.open(data)
+        await ringStore.open(data, { skipPlay: true })
       } catch (e) {
         if (e.message?.includes('今日已响铃')) {
           alarmStore.markTriggered(alarm.alarmId)

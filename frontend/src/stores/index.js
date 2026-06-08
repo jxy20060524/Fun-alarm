@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { createRingtonePlayer } from '../utils/ringtoneAudio'
+
+const ringtonePlayer = createRingtonePlayer()
 
 export const useUserStore = defineStore('user', () => {
   const user = ref(JSON.parse(localStorage.getItem('fun_alarm_user') || 'null'))
@@ -49,43 +52,97 @@ export const useRingStore = defineStore('ring', () => {
   const session = ref(null)
   const question = ref(null)
   const message = ref('')
-  const audio = ref(null)
+  const audioBlocked = ref(false)
+  const audioUnlocked = ref(false)
+  const unlockError = ref('')
+  const unlocking = ref(false)
 
-  function playRingtone(filename) {
-    stopRingtone()
-    if (!filename) return
-    audio.value = new Audio(`/sounds/${encodeURIComponent(filename)}`)
-    audio.value.loop = true
-    audio.value.play().catch(() => {})
+  function syncUnlockedState() {
+    audioUnlocked.value = ringtonePlayer.isUnlocked()
   }
 
-  function stopRingtone() {
-    if (audio.value) {
-      audio.value.pause()
-      audio.value = null
+  function preload() {
+    ringtonePlayer.preloadRingtone()
+  }
+
+  function unlockFromUserGesture(options = {}) {
+    unlocking.value = true
+    unlockError.value = ''
+    return ringtonePlayer.unlockFromUserGesture(options)
+      .then(() => {
+        audioUnlocked.value = true
+        audioBlocked.value = false
+        unlockError.value = ''
+        return true
+      })
+      .catch((err) => {
+        audioUnlocked.value = false
+        audioBlocked.value = true
+        unlockError.value = err?.message || '启用失败，请再试一次'
+        return false
+      })
+      .finally(() => {
+        unlocking.value = false
+      })
+  }
+
+  async function playRingtone(filename) {
+    try {
+      await ringtonePlayer.playRingtone(filename)
+      audioBlocked.value = false
+      return true
+    } catch {
+      audioBlocked.value = true
+      return false
     }
   }
 
-  function open(payload) {
+  async function retryRingtone() {
+    try {
+      await ringtonePlayer.retryRingtone(alarm.value?.ringtone)
+      audioBlocked.value = false
+      audioUnlocked.value = true
+      return true
+    } catch (err) {
+      audioBlocked.value = true
+      unlockError.value = err?.message || '播放失败'
+      return false
+    }
+  }
+
+  async function open(payload, { skipPlay = false } = {}) {
     alarm.value = payload.alarm
     session.value = payload.session
     question.value = payload.question
     message.value = ''
     visible.value = true
-    playRingtone(payload.alarm.ringtone)
+    if (!skipPlay && !ringtonePlayer.isRinging()) {
+      await playRingtone(payload.alarm?.ringtone)
+    }
   }
 
-  function closeRingtoneOnly() {
-    stopRingtone()
+  function stopAlarmSound() {
+    ringtonePlayer.stopAlarmSound()
+    audioBlocked.value = false
   }
 
   function close() {
-    stopRingtone()
     visible.value = false
+    message.value = ''
+  }
+
+  function resetAudioState() {
+    ringtonePlayer.reset()
+    audioUnlocked.value = false
+    audioBlocked.value = false
+    unlockError.value = ''
+    unlocking.value = false
   }
 
   return {
-    visible, alarm, session, question, message, audio,
-    open, close, closeRingtoneOnly, playRingtone, stopRingtone
+    visible, alarm, session, question, message, audioBlocked, audioUnlocked,
+    unlockError, unlocking,
+    preload, open, close, stopAlarmSound, playRingtone, retryRingtone,
+    unlockFromUserGesture, resetAudioState, syncUnlockedState
   }
 })

@@ -2,11 +2,12 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { alarmApi, userApi } from '../api'
-import { useUserStore, useAlarmStore } from '../stores'
+import { useUserStore, useAlarmStore, useRingStore } from '../stores'
 
 const router = useRouter()
 const userStore = useUserStore()
 const alarmStore = useAlarmStore()
+const ringStore = useRingStore()
 const alarms = ref([])
 const error = ref('')
 
@@ -61,6 +62,7 @@ async function editNickname() {
 }
 
 function logout() {
+  ringStore.resetAudioState()
   userStore.logout()
   router.push('/login')
 }

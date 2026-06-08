@@ -12,8 +12,8 @@ public final class AppConstants {
             "棒极了，向目标前进吧！"
     };
     public static final String[] RINGTONES = {
-            "Happy-Pharrell Williams#1B92b.mp3",
-            "Can.t Stop The Feeling.-Justin Timberlake#gDoWB.mp3"
+            "happy.mp3",
+            "feeling.mp3"
     };
 
     private AppConstants() {

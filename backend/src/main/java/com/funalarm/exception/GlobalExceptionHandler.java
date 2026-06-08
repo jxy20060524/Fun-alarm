@@ -27,7 +27,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGeneral(Exception ex) {
+        String detail = rootCauseMessage(ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", "服务器错误：" + ex.getMessage()));
+                .body(Map.of("message", "服务器错误：" + detail));
+    }
+
+    private static String rootCauseMessage(Throwable ex) {
+        Throwable root = ex;
+        while (root.getCause() != null && root.getCause() != root) {
+            root = root.getCause();
+        }
+        String message = root.getMessage();
+        return message != null && !message.isBlank() ? message : ex.getMessage();
     }
 }

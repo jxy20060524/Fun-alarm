@@ -2,16 +2,18 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { authApi } from '../api'
-import { useUserStore } from '../stores'
+import { useUserStore, useRingStore } from '../stores'
 
 const router = useRouter()
 const userStore = useUserStore()
+const ringStore = useRingStore()
 const username = ref('')
 const nickname = ref('')
 const error = ref('')
 const info = ref('')
 
 async function login() {
+  ringStore.unlockFromUserGesture()
   error.value = ''
   try {
     const user = await authApi.login({ username: username.value })
@@ -23,6 +25,7 @@ async function login() {
 }
 
 async function register() {
+  ringStore.unlockFromUserGesture()
   error.value = ''
   info.value = ''
   try {

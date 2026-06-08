@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: fun-alarm
+  config:
+    # 自动加载本地私密配置（若存在 application-local.yml），无需再手动指定 local profile
+    import: optional:classpath:application-local.yml
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:default}
   datasource:

@@ -22,7 +22,7 @@ public class Alarm {
     private String repeatDays;
 
     @Column(nullable = false, length = 100)
-    private String ringtone = "Happy-Pharrell Williams#1B92b.mp3";
+    private String ringtone = "happy.mp3";
 
     @Column(name = "is_active", nullable = false)
     private Boolean active = true;
